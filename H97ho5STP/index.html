@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Portal - Fest Management Software</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom, #f0f2f5, #ffffff);
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: var(--primary-gradient);
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+      .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 0;
+        padding: 1rem;
+        transition: all 0.3s ease;
+      }
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+      }
+      main {
+        margin-left: 0;
+        padding: 2rem;
+      }
+      @media (min-width: 768px) {
+        main {
+          margin-left: 16.6667%;
+        }
+      }
+      .card {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+      .table {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+      .table thead th {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        font-weight: 600;
+      }
+      .table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.05);
+      }
+      .btn {
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      }
+      .form-control,
+      .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: border-color 0.3s ease;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+      .toast-container {
+        z-index: 1055;
+      }
+      .d-none {
+        display: none !important;
+      }
+      @media (max-width: 767.98px) {
+        .sidebar {
+          position: relative;
+          height: auto;
+        }
+        main {
+          margin-left: 0;
+          padding: 1rem;
+        }
+      }
+      .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .sidebar-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.5rem;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .logo-img {
+        max-height: 60px;
+        max-width: 120px;
+        width: auto;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .logo-img:hover {
+        transform: scale(1.05);
+      }
+
+      .app-name {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin: 0.5rem 0 0 0;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.5px;
+      }
+
+      .fest-name {
+        color: #333;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        margin: 0;
+      }
+
+      /* Login-specific: Neutral colors for card */
+      .login-container .logo-img {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .login-container .logo-img:hover {
+        transform: scale(1.05);
+      }
+
+      /* Mobile adjustments */
+      @media (max-width: 767.98px) {
+        .sidebar-header {
+          padding: 1rem;
+        }
+
+        .logo-img {
+          max-height: 50px;
+          max-width: 100px;
+        }
+
+        .app-name {
+          font-size: 1rem;
+        }
+
+        .login-container .logo-container {
+          margin-bottom: 1rem;
+        }
+
+        .login-container .logo-img {
+          max-height: 40px;
+          max-width: 60px;
+        }
+
+        .fest-name {
+          font-size: 0.75rem;
+        }
+      }
+
+      /* Desktop fine-tuning */
+      @media (min-width: 768px) {
+        .sidebar-header {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Login Section -->
+    <div id="loginSection" class="d-flex login-container">
+      <div class="card p-4" style="width: 100%; max-width: 400px">
+        <!-- Logo and Fest Name (Centered for Login) -->
+        <div class="logo-container text-center mb-4">
+          <img src="logo.png" alt="    Logo" class="logo-img" />
+          <p class="fest-name mb-0"></p>
+        </div>
+        <div class="card-body text-center">
+          <h2 class="mb-4 fw-bold text-dark">Team Login</h2>
+          <form id="loginForm">
+            <div class="mb-3">
+              <label class="form-label">Team Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="teamPassword"
+                required
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary w-100"
+              onclick="loginTeam()"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="d-none d-flex">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+        <div class="sidebar-header">
+          <img src="logo.png" alt="    Logo" class="logo-img" />
+          <h5 class="app-name"></h5>
+        </div>
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                href="#"
+                onclick="showSection(event, 'students')"
+              >
+                <i class="bi bi-people me-2"></i>Students
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#"
+                onclick="showSection(event, 'assignments')"
+              >
+                <i class="bi bi-arrow-right-circle me-2"></i>Assignments
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="flex-grow-1 p-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 id="teamNameDisplay" class="fw-bold text-dark mb-0"></h1>
+          <button class="btn btn-outline-secondary" onclick="logout()">
+            Logout
+          </button>
+        </div>
+        <button
+          class="btn btn-outline-primary d-md-none mb-3"
+          onclick="toggleSidebar()"
+        >
+          Menu
+        </button>
+
+        <!-- Students Section -->
+        <div id="students" class="section">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">Student Management</h2>
+            <button
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#studentModal"
+            >
+              Add Student
+            </button>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <input
+                type="text"
+                class="form-control"
+                id="studentSearch"
+                placeholder="Search by name or chest number..."
+                onkeyup="filterStudents()"
+              />
+            </div>
+            <div class="col-md-4">
+              <select
+                class="form-select"
+                id="studentCategoryFilter"
+                onchange="filterStudents()"
+              >
+                <option value="">All Categories</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Chest Number</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Assignments Section -->
+        <div id="assignments" class="section d-none">
+          <h2 class="fw-bold text-dark mb-4">Assign Students to Programmes</h2>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Select Category</label>
+              <select
+                class="form-select"
+                id="assignCategory"
+                onchange="loadProgrammesDropdown()"
+              >
+                <option value="">Choose a category</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Select Programme</label>
+              <select
+                class="form-select"
+                id="assignProgramme"
+                onchange="loadAssignmentTables()"
+                disabled
+              >
+                <option value="">Choose a programme</option>
+              </select>
+            </div>
+          </div>
+          <div id="assignmentContent" class="d-none">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Available Students</h5>
+                <div class="row mb-3">
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="availSearch"
+                      placeholder="Search by name or chest..."
+                      onkeyup="filterAvailableStudents()"
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <select
+                      class="form-select"
+                      id="availCatFilter"
+                      onchange="filterAvailableStudents()"
+                    >
+                      <option value="">All Categories</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button
+                      class="btn btn-outline-secondary w-100"
+                      onclick="clearAvailFilters()"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>
+                          <input
+                            type="checkbox"
+                            id="selectAllAvail"
+                            onchange="selectAllAvailable(this.checked)"
+                          />
+                        </th>
+                        <th>Chest No</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                      </tr>
+                    </thead>
+                    <tbody id="availableStudentsTbody"></tbody>
+                  </table>
+                </div>
+                <button
+                  class="btn btn-primary mt-2"
+                  id="assignBtn"
+                  onclick="assignSelectedStudents()"
+                >
+                  Assign Selected Students
+                </button>
+              </div>
+            </div>
+            <div class="card mt-4">
+              <div class="card-body">
+                <h5 class="card-title">Assigned Students</h5>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Chest No</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="assignedStudentsTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Student Modal -->
+    <div
+      class="modal fade"
+      id="studentModal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Add/Edit Student</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="studentForm">
+              <input type="hidden" id="studentId" />
+              <div class="mb-3">
+                <label class="form-label">Chest Number</label>
+                <input type="text" class="form-control" id="chestNo" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="studentCategory" required>
+                  <option value="">Select Category</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveStudent()"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        id="liveToast"
+        class="toast align-items-center text-white bg-success border-0"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body" id="toastBody"></div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        doc,
+        updateDoc,
+        deleteDoc,
+        query,
+        where,
+        onSnapshot,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+  apiKey: "AIzaSyC1gEEprODHX63Rbd3eKAbzef7JSz7e4yc",
+  authDomain: "suffa-b3b9f.firebaseapp.com",
+  projectId: "suffa-b3b9f",
+  storageBucket: "suffa-b3b9f.firebasestorage.app",
+  messagingSenderId: "1062460671442",
+  appId: "1:1062460671442:web:a5a81bf77c4a08061bb40b"
+};
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      let students = [],
+        programmes = [],
+        categories = [],
+        availableStudents = [],
+        selectedProgramme = null;
+      let selectedStudentIds = new Set();
+      let unsubscribeStudents = null,
+        unsubscribeProgrammes = null,
+        unsubscribeCategories = null,
+        unsubscribeTeam = null;
+      let teamName = "",
+        teamId = "",
+        teamPassword = "";
+
+      // Expose functions to global scope
+      window.showSection = function (e, section) {
+        document
+          .querySelectorAll(".section")
+          .forEach((sec) => sec.classList.add("d-none"));
+        document.getElementById(section).classList.remove("d-none");
+        document
+          .querySelectorAll(".nav-link")
+          .forEach((link) => link.classList.remove("active"));
+        if (e && e.target) e.target.classList.add("active");
+        if (section === "assignments") {
+          populateTeamCategorySelect(
+            "assignCategory",
+            '<option value="">Choose a category</option>'
+          );
+          document.getElementById("assignProgramme").disabled = true;
+          document.getElementById("assignProgramme").innerHTML =
+            '<option value="">Choose a programme</option>';
+          document.getElementById("assignmentContent").classList.add("d-none");
+        }
+        if (section === "students") filterStudents();
+      };
+
+      window.toggleSidebar = function () {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("d-none");
+      };
+
+      window.showToast = function (title, message, type = "success") {
+        const toastEl = document.getElementById("liveToast");
+        const toastBody = document.getElementById("toastBody");
+        toastBody.innerHTML = `${title}: ${message}`;
+        toastEl.className = `toast align-items-center text-white bg-${
+          type === "success" ? "success" : "danger"
+        } border-0`;
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+      };
+
+      function setupTeamListener() {
+        if (unsubscribeTeam) unsubscribeTeam();
+        unsubscribeTeam = onSnapshot(doc(db, "teams", teamId), (docSnap) => {
+          if (!docSnap.exists()) {
+            logout();
+            return;
+          }
+          const data = docSnap.data();
+          if (data.password !== teamPassword || !data.password) {
+            showToast(
+              "Session Invalid",
+              "Password has been changed or destroyed. Logging out."
+            );
+            setTimeout(logout, 2000);
+          }
+        });
+      }
+
+      window.loginTeam = async function () {
+        const pw = document.getElementById("teamPassword").value;
+        if (!pw) return;
+        try {
+          const q = query(collection(db, "teams"), where("password", "==", pw));
+          const snapshot = await getDocs(q);
+          if (snapshot.empty) {
+            showToast("Error", "Invalid password");
+            return;
+          }
+          const teamDoc = snapshot.docs[0];
+          const teamData = teamDoc.data();
+          teamId = teamDoc.id;
+          teamName = teamData.name;
+          teamPassword = pw;
+          localStorage.setItem("teamId", teamId);
+          localStorage.setItem("teamName", teamName);
+          localStorage.setItem("teamPassword", teamPassword);
+          document.getElementById("teamPassword").value = "";
+          document.getElementById("loginSection").classList.add("d-none");
+          document.getElementById("mainContent").classList.remove("d-none");
+          document.getElementById("teamNameDisplay").textContent = teamName;
+          loadAllData();
+          setupTeamListener();
+          showSection(null, "students");
+        } catch (error) {
+          showToast("Error", "Login failed: " + error.message, "error");
+        }
+      };
+
+      window.logout = function () {
+        localStorage.clear();
+        teamId = "";
+        teamName = "";
+        teamPassword = "";
+        if (unsubscribeTeam) {
+          unsubscribeTeam();
+          unsubscribeTeam = null;
+        }
+        document.getElementById("mainContent").classList.add("d-none");
+        document.getElementById("loginSection").classList.remove("d-none");
+        document.getElementById("teamNameDisplay").textContent = "";
+        if (unsubscribeStudents) unsubscribeStudents();
+        if (unsubscribeProgrammes) unsubscribeProgrammes();
+        if (unsubscribeCategories) unsubscribeCategories();
+      };
+
+      function loadAllData() {
+        loadStudents();
+        loadCategories();
+        loadProgrammes();
+        populateAllSelects();
+      }
+
+      function loadStudents() {
+        if (unsubscribeStudents) unsubscribeStudents();
+        const q = query(collection(db, "students"));
+        unsubscribeStudents = onSnapshot(
+          q,
+          (snapshot) => {
+            students = snapshot.docs
+              .map((d) => ({ id: d.id, ...d.data() }))
+              .sort((a, b) => a.chestNo.localeCompare(b.chestNo));
+            if (
+              !document.getElementById("students").classList.contains("d-none")
+            ) {
+              filterStudents();
+            }
+            if (selectedProgramme) {
+              loadAssignmentTables();
+            }
+          },
+          (error) => console.error("Error loading students:", error)
+        );
+      }
+
+      function loadProgrammes() {
+        if (unsubscribeProgrammes) unsubscribeProgrammes();
+        const q = query(collection(db, "programmes"));
+        unsubscribeProgrammes = onSnapshot(
+          q,
+          (snapshot) => {
+            programmes = snapshot.docs
+              .map((d) => ({
+                id: d.id,
+                ...d.data(),
+                locked: d.data().locked || false,
+              }))
+              .sort((a, b) => (a.serial || 0) - (b.serial || 0));
+            if (document.getElementById("assignCategory").value) {
+              const currentProgValue =
+                document.getElementById("assignProgramme").value;
+              loadProgrammesDropdown();
+              document.getElementById("assignProgramme").value =
+                currentProgValue;
+            }
+          },
+          (error) => console.error("Error loading programmes:", error)
+        );
+      }
+
+      function loadCategories() {
+        if (unsubscribeCategories) unsubscribeCategories();
+        const q = query(collection(db, "categories"));
+        unsubscribeCategories = onSnapshot(
+          q,
+          (snapshot) => {
+            categories = snapshot.docs
+              .map((d) => ({ id: d.id, ...d.data() }))
+              .sort((a, b) => (a.serial || 0) - (b.serial || 0));
+            populateAllSelects();
+          },
+          (error) => console.error("Error loading categories:", error)
+        );
+      }
+
+      function populateAllSelects() {
+        ["studentCategoryFilter", "studentCategory", "availCatFilter"].forEach(
+          (id) => {
+            populateCategorySelect(
+              id,
+              id.includes("Filter")
+                ? '<option value="">All</option>'
+                : '<option value="">Select Category</option>'
+            );
+          }
+        );
+      }
+
+      function populateCategorySelect(selectId, defaultOption) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        select.innerHTML = defaultOption || "";
+        categories.forEach((cat) => {
+          const option = new Option(cat.name, cat.name);
+          select.add(option);
+        });
+      }
+
+      function populateTeamCategorySelect(selectId, defaultOption) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        const teamCats = [
+          ...new Set(
+            students.filter((s) => s.team === teamName).map((s) => s.category)
+          ),
+        ];
+        select.innerHTML = defaultOption || "";
+        const genCat = categories.find((c) => c.name === "General");
+        if (genCat) {
+          const option = new Option("General", "General");
+          select.add(option);
+        }
+        teamCats.forEach((catName) => {
+          if (catName !== "General") {
+            const cat = categories.find((c) => c.name === catName);
+            if (cat) {
+              const option = new Option(cat.name, cat.name);
+              select.add(option);
+            }
+          }
+        });
+      }
+
+      // Students
+      window.filterStudents = function () {
+        const search = document
+          .getElementById("studentSearch")
+          .value.toLowerCase();
+        const catFilter = document.getElementById(
+          "studentCategoryFilter"
+        ).value;
+        const filtered = students.filter(
+          (s) =>
+            s.team === teamName &&
+            (s.name.toLowerCase().includes(search) ||
+              (s.chestNo || "").toLowerCase().includes(search)) &&
+            (!catFilter || s.category === catFilter)
+        );
+        const tbody = document.getElementById("studentsTbody");
+        tbody.innerHTML = filtered
+          .map(
+            (s) => `
+                <tr>
+                    <td>${s.chestNo || ""}</td>
+                    <td>${s.name}</td>
+                    <td>${s.category}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editStudent('${
+                          s.id
+                        }')">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${
+                          s.id
+                        }')">Delete</button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      };
+
+      window.editStudent = function (id) {
+        const s = students.find((st) => st.id === id);
+        if (!s || s.team !== teamName) return;
+        document.getElementById("studentId").value = id;
+        document.getElementById("chestNo").value = s.chestNo || "";
+        document.getElementById("name").value = s.name;
+        document.getElementById("studentCategory").value = s.category;
+        new bootstrap.Modal(document.getElementById("studentModal")).show();
+      };
+
+      window.saveStudent = async function () {
+        const form = document.getElementById("studentForm");
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        const data = {
+          chestNo: document.getElementById("chestNo").value,
+          name: document.getElementById("name").value,
+          category: document.getElementById("studentCategory").value,
+          team: teamName,
+        };
+        const id = document.getElementById("studentId").value;
+        const isAdd = !id;
+        try {
+          if (id) {
+            await updateDoc(doc(db, "students", id), data);
+          } else {
+            await addDoc(collection(db, "students"), data);
+          }
+          showToast("Success", "Student saved successfully");
+          form.reset();
+          document.getElementById("studentId").value = "";
+          if (!isAdd) {
+            bootstrap.Modal.getInstance(
+              document.getElementById("studentModal")
+            ).hide();
+          }
+        } catch (error) {
+          showToast(
+            "Error",
+            "Failed to save student: " + error.message,
+            "error"
+          );
+        }
+      };
+
+      window.deleteStudent = async function (id) {
+        if (!confirm("Are you sure you want to delete this student?")) return;
+        const s = students.find((st) => st.id === id);
+        if (!s || s.team !== teamName) return;
+        try {
+          await deleteDoc(doc(db, "students", id));
+          showToast("Success", "Student deleted");
+          filterStudents();
+        } catch (error) {
+          showToast(
+            "Error",
+            "Failed to delete student: " + error.message,
+            "error"
+          );
+        }
+      };
+
+      // Assignments
+      window.loadProgrammesDropdown = function () {
+        const cat = document.getElementById("assignCategory").value;
+        const programmeSelect = document.getElementById("assignProgramme");
+        programmeSelect.disabled = !cat;
+        programmeSelect.innerHTML =
+          '<option value="">Choose a programme</option>';
+        if (!cat) {
+          document.getElementById("assignmentContent").classList.add("d-none");
+          return;
+        }
+        const catProgrammes = programmes
+          .filter((p) => p.category === cat)
+          .sort((a, b) => (a.serial || 0) - (b.serial || 0));
+        catProgrammes.forEach((p) => {
+          const option = new Option(
+            `${p.name} - ${p.type}${
+              p.category === "General" ? ` (${p.participantCount})` : ""
+            }`,
+            p.id
+          );
+          programmeSelect.add(option);
+        });
+        document.getElementById("assignmentContent").classList.add("d-none");
+      };
+
+      window.loadAssignmentTables = function () {
+        const progId = document.getElementById("assignProgramme").value;
+        if (!progId) {
+          document.getElementById("assignmentContent").classList.add("d-none");
+          return;
+        }
+        const newProgramme = programmes.find((p) => p.id === progId);
+        if (!newProgramme) return;
+        if (selectedProgramme && selectedProgramme.id !== progId) {
+          selectedStudentIds.clear();
+        }
+        selectedProgramme = newProgramme;
+        document.getElementById("assignmentContent").classList.remove("d-none");
+        let teamStudents = students.filter((s) => s.team === teamName);
+        if (selectedProgramme.category !== "General") {
+          teamStudents = teamStudents.filter(
+            (s) => s.category === selectedProgramme.category
+          );
+        }
+        availableStudents = teamStudents;
+        populateCategorySelect(
+          "availCatFilter",
+          '<option value="">All Categories</option>'
+        );
+        filterAvailableStudents();
+        renderAssignedStudents();
+        const assignBtn = document.getElementById("assignBtn");
+        if (selectedProgramme.locked) {
+          assignBtn.disabled = true;
+          assignBtn.textContent = "Programme Locked";
+        } else {
+          assignBtn.disabled = false;
+          assignBtn.textContent = "Assign Selected Students";
+        }
+      };
+
+      window.filterAvailableStudents = function () {
+        if (!selectedProgramme) return;
+        const search = document
+          .getElementById("availSearch")
+          .value.toLowerCase();
+        const catFilter = document.getElementById("availCatFilter").value;
+        let filtered = availableStudents.filter((s) => {
+          const notAssigned = !(
+            selectedProgramme.assignedStudents || []
+          ).includes(s.id);
+          const searchMatch =
+            s.name.toLowerCase().includes(search) ||
+            (s.chestNo || "").toLowerCase().includes(search);
+          const catMatch = !catFilter || s.category === catFilter;
+          return notAssigned && searchMatch && catMatch;
+        });
+        const tbody = document.getElementById("availableStudentsTbody");
+        tbody.innerHTML = filtered
+          .map(
+            (s) => `
+                <tr>
+                    <td><input type="checkbox" class="form-check-input assignCheck" value="${
+                      s.id
+                    }"></td>
+                    <td>${s.chestNo || ""}</td>
+                    <td>${s.name}</td>
+                    <td>${s.category}</td>
+                </tr>
+            `
+          )
+          .join("");
+        const checks = tbody.querySelectorAll(".assignCheck");
+        let allChecked = true;
+        let someChecked = false;
+        checks.forEach((check) => {
+          const id = check.value;
+          check.checked = selectedStudentIds.has(id);
+          if (check.checked) {
+            someChecked = true;
+          } else {
+            allChecked = false;
+          }
+          check.addEventListener("change", (e) => {
+            const cid = e.target.value;
+            if (e.target.checked) {
+              selectedStudentIds.add(cid);
+            } else {
+              selectedStudentIds.delete(cid);
+            }
+          });
+        });
+        const selectAll = document.getElementById("selectAllAvail");
+        if (allChecked) {
+          selectAll.checked = true;
+          selectAll.indeterminate = false;
+        } else if (someChecked) {
+          selectAll.checked = false;
+          selectAll.indeterminate = true;
+        } else {
+          selectAll.checked = false;
+          selectAll.indeterminate = false;
+        }
+      };
+
+      window.clearAvailFilters = function () {
+        document.getElementById("availSearch").value = "";
+        document.getElementById("availCatFilter").value = "";
+        filterAvailableStudents();
+      };
+
+      window.selectAllAvailable = function (checked) {
+        const tbody = document.getElementById("availableStudentsTbody");
+        const checks = tbody.querySelectorAll(".assignCheck");
+        checks.forEach((check) => {
+          const id = check.value;
+          check.checked = checked;
+          if (checked) {
+            selectedStudentIds.add(id);
+          } else {
+            selectedStudentIds.delete(id);
+          }
+        });
+        const selectAll = document.getElementById("selectAllAvail");
+        selectAll.indeterminate = false;
+      };
+
+      window.assignSelectedStudents = async function () {
+        if (!selectedProgramme) return;
+        if (selectedProgramme.locked) {
+          showToast("Error", "Programme is locked for editing");
+          return;
+        }
+        const ids = Array.from(selectedStudentIds);
+        if (ids.length === 0) {
+          showToast("Error", "Please select at least one student", "error");
+          return;
+        }
+        const currentCatValue = document.getElementById("assignCategory").value;
+        const currentProgValue =
+          document.getElementById("assignProgramme").value;
+        const selectedStudents = ids
+          .map((id) => students.find((s) => s.id === id))
+          .filter(Boolean);
+        const isGeneral = selectedProgramme.category === "General";
+
+        if (isGeneral) {
+          const assignedIds = selectedProgramme.assignedStudents || [];
+          const assignedStudentsList = assignedIds
+            .map((id) => students.find((s) => s.id === id))
+            .filter(Boolean);
+          let assignedPerTeam = {};
+          assignedStudentsList.forEach((s) => {
+            if (s.team === teamName) {
+              assignedPerTeam[teamName] = (assignedPerTeam[teamName] || 0) + 1;
+            }
+          });
+          let selectedPerTeam = {};
+          selectedStudents.forEach((s) => {
+            selectedPerTeam[teamName] = (selectedPerTeam[teamName] || 0) + 1;
+          });
+          let violations = [];
+          Object.keys(selectedPerTeam).forEach((t) => {
+            const current = assignedPerTeam[t] || 0;
+            const adding = selectedPerTeam[t];
+            if (current + adding > selectedProgramme.participantCount) {
+              violations.push(t);
+            }
+          });
+          if (violations.length > 0) {
+            showToast(
+              "Error",
+              `Cannot assign more than ${selectedProgramme.participantCount} students from your team for this programme`,
+              "error"
+            );
+            return;
+          }
+        }
+
+        try {
+          const newAssigned = [
+            ...(selectedProgramme.assignedStudents || []),
+            ...ids,
+          ];
+          await updateDoc(doc(db, "programmes", selectedProgramme.id), {
+            assignedStudents: newAssigned,
+          });
+
+          selectedProgramme =
+            programmes.find((p) => p.id === currentProgValue) ||
+            selectedProgramme;
+
+          ids.forEach((id) => selectedStudentIds.delete(id));
+
+          showToast("Success", `${ids.length} students assigned successfully`);
+
+          loadAssignmentTables();
+        } catch (error) {
+          showToast(
+            "Error",
+            "Failed to assign students: " + error.message,
+            "error"
+          );
+        }
+      };
+
+      function renderAssignedStudents() {
+        if (!selectedProgramme) return;
+        const assignedIds = selectedProgramme.assignedStudents || [];
+        const assigned = students.filter(
+          (s) => assignedIds.includes(s.id) && s.team === teamName
+        );
+        const tbody = document.getElementById("assignedStudentsTbody");
+        tbody.innerHTML = assigned
+          .map(
+            (s) => `
+                <tr>
+                    <td>${s.chestNo || ""}</td>
+                    <td>${s.name}</td>
+                    <td>${s.category}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeStudentFromProgramme('${
+                          s.id
+                        }')">Remove</button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      window.removeStudentFromProgramme = async function (studentId) {
+        if (!selectedProgramme || selectedProgramme.locked) return;
+        if (!confirm("Are you sure you want to remove this student?")) return;
+        const currentCatValue = document.getElementById("assignCategory").value;
+        const currentProgValue =
+          document.getElementById("assignProgramme").value;
+        const assignedIds = selectedProgramme.assignedStudents || [];
+        const newAssigned = assignedIds.filter((id) => id !== studentId);
+        try {
+          await updateDoc(doc(db, "programmes", selectedProgramme.id), {
+            assignedStudents: newAssigned,
+          });
+
+          selectedProgramme =
+            programmes.find((p) => p.id === currentProgValue) ||
+            selectedProgramme;
+
+          showToast("Success", "Student removed successfully");
+
+          loadAssignmentTables();
+        } catch (error) {
+          showToast(
+            "Error",
+            "Failed to remove student: " + error.message,
+            "error"
+          );
+        }
+      };
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        const storedTeamId = localStorage.getItem("teamId");
+        const storedTeamName = localStorage.getItem("teamName");
+        const storedTeamPassword = localStorage.getItem("teamPassword");
+        if (storedTeamId && storedTeamName && storedTeamPassword) {
+          teamId = storedTeamId;
+          teamName = storedTeamName;
+          teamPassword = storedTeamPassword;
+          getDoc(doc(db, "teams", teamId))
+            .then((docSnap) => {
+              if (
+                !docSnap.exists() ||
+                docSnap.data().password !== teamPassword
+              ) {
+                localStorage.clear();
+                document
+                  .getElementById("loginSection")
+                  .classList.remove("d-none");
+                document.getElementById("mainContent").classList.add("d-none");
+                showToast("Session Expired", "Please login again.");
+                return;
+              }
+              document.getElementById("teamNameDisplay").textContent = teamName;
+              document.getElementById("loginSection").classList.add("d-none");
+              document.getElementById("mainContent").classList.remove("d-none");
+              loadAllData();
+              setupTeamListener();
+              showSection(null, "students");
+            })
+            .catch((error) => {
+              console.error("Error validating session:", error);
+              localStorage.clear();
+              document
+                .getElementById("loginSection")
+                .classList.remove("d-none");
+              document.getElementById("mainContent").classList.add("d-none");
+            });
+        } else {
+          document.getElementById("loginSection").classList.remove("d-none");
+          document.getElementById("mainContent").classList.add("d-none");
+        }
+        document.getElementById("loginForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          loginTeam();
+        });
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

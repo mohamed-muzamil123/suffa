@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Panel Gateway - Client Portal</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Base styling and typography */
+        :root {
+            --card-border-gradient: linear-gradient(135deg, #4F46E5 0%, #EC4899 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        /* Custom gradient text for highlights */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #6366F1, #EC4899);
+        }
+
+        /* Full-screen background gradient effect (Light Mode) */
+        .bg-gradient-light {
+            background-color: #F8FAFC; /* Slate 50 */
+            background-image: radial-gradient(at 10% 10%, #D4D4D8 0%, transparent 50%),
+                              radial-gradient(at 90% 90%, #E0F2F1 0%, transparent 50%);
+            background-size: 80% 80%;
+            background-attachment: fixed;
+        }
+
+        /* Full-screen background gradient effect (Dark Mode) */
+        .dark .bg-gradient-dark {
+            background-color: #0F172A; /* Slate 900 */
+            background-image: radial-gradient(at 10% 10%, #475569 0%, transparent 50%),
+                              radial-gradient(at 90% 90%, #164E63 0%, transparent 50%);
+            background-size: 80% 80%;
+            background-attachment: fixed;
+        }
+
+        /* Custom styles for the animated gradient border on cards */
+        .card-gradient-border {
+            border: 2px solid transparent;
+            background-clip: padding-box, border-box;
+            background-origin: padding-box, border-box;
+            position: relative;
+            /* Default background for card content (inside border) */
+            background-color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dark .card-gradient-border {
+            background-color: #1E293B; /* Slate 800 */
+        }
+
+        .card-gradient-border:hover {
+            /* On hover, apply the gradient to the pseudo-element border */
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: var(--card-border-gradient);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        .card-gradient-border:hover::before {
+            opacity: 1;
+        }
+
+        /* Fade-in animation for cards */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom spinner for loading states */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Toast Notification Styling */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background-color: #10B981; /* Emerald 500 */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+    </style>
+</head>
+<body class="bg-gradient-light dark:bg-gradient-dark min-h-scraeen">
+
+    <!-- Main Content Container -->
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Header / Navigation -->
+        <header class="flex justify-between items-center py-6 border-b border-gray-200 dark:border-slate-700 mb-12">
+            <!-- Client Logo Placeholder -->
+            <div class="flex items-center space-x-3">
+                <!-- Replace the SVG below with your client's logo image URL -->
+                <img src="https://placehold.co/40x40/EC4899/ffffff?text=FARASZTO" alt="Client Logo" class="w-10 h-10 rounded-lg shadow-md">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white hidden sm:block">
+                    <span class="gradient-text">Main</span> Portal
+                </h1>
+            </div>
+
+            <!-- Action Buttons (Reset & Theme Toggle) -->
+            <div class="flex items-center space-x-3">
+                <!-- Reset Access Button -->
+                <button onclick="openResetModal()" aria-label="Reset all panel access"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900 transition-colors duration-300 shadow-sm">
+                    Reset Access
+                </button>
+
+                <!-- Dark/Light Mode Toggle -->
+                <button id="theme-toggle" aria-label="Toggle dark and light mode"
+                        class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-300 shadow-md">
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M6.34 17.66l-1.41 1.41"></path><path d="M19.07 4.93l-1.41 1.41"></path></svg>
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M12 3a6.364 6.364 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="text-center mb-20 pt-10">
+            <h2 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-7xl mb-4">
+                Welcome to the <span class="gradient-text">Software Gateway</span>
+            </h2>
+            <p class="mt-4 text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Your centralized control hub for all proprietary software panels. Securely access critical systems with a one-time password entry.
+            </p>
+        </section>
+
+        <!-- Panel Grid Section -->
+        <section class="mb-20">
+            <h3 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Available Panels</h3>
+            <div id="panel-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Panel Cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-20 py-8 border-t border-gray-200 dark:border-slate-700 text-center text-gray-500 dark:text-gray-400">
+            <p>&copy; 2025 Software Gateway. All rights reserved. | <a href="#" class="text-indigo-500 hover:text-indigo-600 dark:text-pink-400 transition-colors">Support & Contact</a></p>
+            <p class="mt-2 text-sm">Access tokens are stored securely in your browser's local storage.</p>
+        </footer>
+
+    </div>
+
+    <!-- 1. Password Access Modal -->
+    <div id="password-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none bg-gray-900/50 dark:bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="modal-title-access">
+        <div id="modal-content-access" class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-transform duration-300 scale-95">
+            <h3 id="modal-title-access" class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Access Protected Panel</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Enter the required password to securely access the <span id="modal-panel-name" class="font-semibold text-indigo-600 dark:text-pink-400"></span>.</p>
+
+            <form id="password-form" onsubmit="handlePasswordSubmit(event)">
+                <input type="password" id="panel-password" placeholder="Enter Panel Password" required autocomplete="off"
+                       class="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:text-white dark:placeholder-gray-400 mb-4 transition-all duration-200">
+
+                <p id="password-error" class="text-red-500 text-sm mb-4 hidden" aria-live="assertive">Invalid password.</p>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal('password-modal', 'modal-content-access')" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors shadow-md">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submit-button" class="px-6 py-2 rounded-lg text-white font-semibold bg-indigo-600 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/50 flex items-center space-x-2">
+                        <span id="button-text">Unlock & Go</span>
+                        <div id="loading-spinner" class="spinner hidden"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Reset Confirmation Modal -->
+    <div id="reset-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none bg-gray-900/50 dark:bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="modal-title-reset">
+        <div id="modal-content-reset" class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-transform duration-300 scale-95">
+            <h3 id="modal-title-reset" class="text-2xl font-bold text-red-500 mb-4">Confirm Reset</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Are you sure you want to clear access for ALL panels? You will need to re-enter the password for every panel you wish to access.</p>
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('reset-modal', 'modal-content-reset')" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors shadow-md">
+                    No, Keep Access
+                </button>
+                <button type="button" onclick="resetAccessConfirmed()" class="px-6 py-2 rounded-lg text-white font-semibold bg-red-600 hover:bg-red-700 transition-all shadow-lg shadow-red-500/50">
+                    Yes, Reset All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container">
+        <!-- Toast messages will be injected here -->
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase Configuration
+       const firebaseConfig = {
+  apiKey: "AIzaSyC1gEEprODHX63Rbd3eKAbzef7JSz7e4yc",
+  authDomain: "suffa-b3b9f.firebaseapp.com",
+  projectId: "suffa-b3b9f",
+  storageBucket: "suffa-b3b9f.firebasestorage.app",
+  messagingSenderId: "1062460671442",
+  appId: "1:1062460671442:web:a5a81bf77c4a08061bb40b"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- Configuration Data ---
+        const PANELS = [
+            { name: 'Admin Panel', link: 'https://fest-hub.vercel.app/', icon: 'ShieldCheck', image: 'https://placehold.co/128x80/6366F1/ffffff?font=inter&text=Admin' },
+            { name: 'Green Room Panel', link: 'https://fest-hub.vercel.app/', icon: 'CheckSquare', image: 'https://placehold.co/128x80/10B981/ffffff?font=inter&text=Green' },
+            { name: 'Judges Creating Panel', link: 'https://fest-hub.vercel.app/', icon: 'UserPlus', image: 'https://placehold.co/128x80/F59E0B/ffffff?font=inter&text=Judges' },
+            { name: 'Judge Mark Entering Panel', link: 'https://fest-hub.vercel.app/', icon: 'Edit', image: 'https://placehold.co/128x80/EF4444/ffffff?font=inter&text=Marks' },
+            { name: 'Media Mark & Finalizing Panel', link: 'https://fest-hub.vercel.app/', icon: 'Film', image: 'https://placehold.co/128x80/EC4899/ffffff?font=inter&text=Media' },
+            { name: 'Announce & Media Panel', link: 'https://fest-hub.vercel.app/', icon: 'Megaphone', image: 'https://placehold.co/128x80/3B82F6/ffffff?font=inter&text=Announce' },
+            { name: 'Checking Students & Team Point Panel', link: 'https://fest-hub.vercel.app/', icon: 'Users', image: 'https://placehold.co/128x80/8B5CF6/ffffff?font=inter&text=Points' },
+            { name: 'Prizing Panel', link: 'https://fest-hub.vercel.app/', icon: 'Award', image: 'https://placehold.co/128x80/22C55E/ffffff?font=inter&text=Prize' },
+            { name: 'Team Panel', link: 'https://faraszto.vercel.app/H97ho5STP', isPublic: true, badge: 'Public', icon: 'Users', image: 'https://placehold.co/128x80/10B981/ffffff?font=inter&text=Team' },
+            { name: 'Public Results Site', link: 'https://faraszto.vercel.app/', isPublic: true, badge: 'Public Site', icon: 'Award', image: 'https://placehold.co/128x80/3B82F6/ffffff?font=inter&text=Results' }
+        ];
+
+        const STORAGE_PREFIX = 'panel_access_';
+        let currentPanel = null; // Stores the panel object when the access modal is open
+
+        // --- Utility Functions: Icon Generation (Kept simple, as before) ---
+
+        function getIconPath(iconName) {
+            switch (iconName) {
+                case 'ShieldCheck': return '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>';
+                case 'CheckSquare': return '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
+                case 'UserPlus': return '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>';
+                case 'Edit': return '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>';
+                case 'Film': return '<rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/><path d="M2 7h20"/><path d="M2 17h20"/>';
+                case 'Megaphone': return '<path d="M3 11l18-8-3 18-12-2.5 3-15z"/>';
+                case 'Users': return '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>';
+                case 'Award': return '<path d="M12 15a6.5 6.5 0 0 0-7.3-7.2l-1.5 8.7a.5.5 0 0 0-.1.2c0 .3.2.5.5.5h16.4a.5.5 0 0 0 .5-.5c0-.1 0-.2-.1-.2l-1.5-8.7a6.5 6.5 0 0 0-7.3 7.2z"/><circle cx="12" cy="7" r="4"/>';
+                default: return '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>';
+            }
+        }
+        function getIconSvg(iconName, classes = 'w-8 h-8') {
+            const path = getIconPath(iconName);
+            return `<svg xmlns="http://www.w3.org/2000/svg" class="${classes}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+        }
+
+
+        // --- Theme / Dark Mode Logic (Unchanged) ---
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        function setDarkMode(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function initTheme() {
+            const storedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+                setDarkMode(true);
+            } else {
+                setDarkMode(false);
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setDarkMode(!isDark);
+        });
+
+
+        // --- Toast Notification Logic ---
+
+        function showToast(message, duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            container.appendChild(toast);
+
+            // Show animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Hide after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+                // Remove from DOM after transition
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        // --- Panel Card Generation & Animation ---
+
+        function createPanelCard(panel, index) {
+            const card = document.createElement('div');
+            card.className = `fade-in card-gradient-border p-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform ease-out`;
+            card.setAttribute('data-panel-name', panel.name);
+            card.style.transitionDelay = `${index * 50}ms`;
+
+            const iconSvg = getIconSvg(panel.icon, 'w-8 h-8 text-indigo-600 dark:text-pink-400 group-hover:rotate-12 transition-transform duration-500 ease-out');
+
+            const imageHtml = panel.image ? `<img src="${panel.image}" alt="${panel.name} Thumbnail" class="w-20 h-auto rounded-md mb-4 object-cover shadow-inner border border-gray-100 dark:border-slate-700">` : '';
+
+            const statusText = panel.isPublic ? panel.badge : (isPanelAccessed(panel.name) ? 'Access Granted' : 'Password Required');
+
+            card.innerHTML = `
+                <div class="flex flex-col h-full group" onclick="checkAccess('${panel.name}')" tabindex="0" role="button" aria-label="Access ${panel.name} Panel">
+                    ${imageHtml}
+                    <div class="mb-4">${iconSvg}</div>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">${panel.name}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 flex-grow">
+                        Secure access to ${panel.name.toLowerCase()}. Click to proceed.
+                    </p>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="text-sm font-medium text-indigo-500 dark:text-pink-400">${statusText}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function isPanelAccessed(panelName) {
+            return localStorage.getItem(STORAGE_PREFIX + panelName) !== null;
+        }
+
+        function updateCardStatus(panelName, status) {
+            const card = document.querySelector(`[data-panel-name="${panelName}"]`);
+            if (card) {
+                const statusSpan = card.querySelector('span.text-sm.font-medium');
+                if (statusSpan) {
+                    statusSpan.textContent = status ? 'Access Granted' : 'Password Required';
+                }
+            }
+        }
+
+        function renderPanelGrid() {
+            const grid = document.getElementById('panel-grid');
+            if (!grid) return;
+            grid.innerHTML = ''; // Clear existing content
+
+            PANELS.forEach((panel, index) => {
+                const card = createPanelCard(panel, index);
+                grid.appendChild(card);
+            });
+
+            setupIntersectionObserver();
+        }
+
+        function setupIntersectionObserver() {
+            const cards = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '0px',
+                threshold: 0.1
+            });
+
+            cards.forEach(card => observer.observe(card));
+        }
+
+        // --- Modal Control Functions ---
+
+        function openModal(modalId, contentId, panel = null) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(contentId);
+
+            if (panel) {
+                currentPanel = panel;
+                const modalPanelName = document.getElementById('modal-panel-name');
+                if (modalPanelName) modalPanelName.textContent = panel.name;
+                const passwordInput = document.getElementById('panel-password');
+                if (passwordInput) {
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+                const passwordError = document.getElementById('password-error');
+                if (passwordError) passwordError.classList.add('hidden');
+            }
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            content.classList.remove('scale-95');
+        }
+
+        function closeModal(modalId, contentId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(contentId);
+
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none', 'opacity-0');
+                if (modalId === 'password-modal') {
+                    currentPanel = null;
+                }
+            }, 300);
+        }
+
+        // --- Panel Access Logic ---
+
+        async function checkAccess(panelName) {
+            const panel = PANELS.find(p => p.name === panelName);
+            if (!panel) return console.error('Panel not found:', panelName);
+
+            if (panel.isPublic) {
+                window.open(panel.link, '_blank');
+                return;
+            }
+
+            const savedPassword = localStorage.getItem(STORAGE_PREFIX + panelName);
+            if (savedPassword) {
+                await verifyAndOpen(savedPassword, panelName);
+            } else {
+                openModal('password-modal', 'modal-content-access', panel);
+            }
+        }
+
+        async function verifyAndOpen(password, panelName) {
+            const docRef = db.collection('gatewayPanels').doc(password);
+            const docSnap = await docRef.get();
+            if (docSnap.exists) {
+                const link = docSnap.data().link;
+                window.open(link, '_blank');
+                showToast(`Access Granted for ${panelName}!`);
+            } else {
+                localStorage.removeItem(STORAGE_PREFIX + panelName);
+                showToast('Access expired. Please re-enter password.', 5000);
+                const panel = PANELS.find(p => p.name === panelName);
+                openModal('password-modal', 'modal-content-access', panel);
+            }
+        }
+
+        async function handlePasswordSubmit(event) {
+            event.preventDefault();
+            if (!currentPanel) return;
+
+            const enteredPassword = document.getElementById('panel-password').value.trim();
+            const passwordError = document.getElementById('password-error');
+            const submitButton = document.getElementById('submit-button');
+            const buttonText = document.getElementById('button-text');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+            // Show loading spinner
+            buttonText.textContent = 'Checking...';
+            loadingSpinner.classList.remove('hidden');
+            submitButton.disabled = true;
+
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
+
+            const docRef = db.collection('gatewayPanels').doc(enteredPassword);
+            const docSnap = await docRef.get();
+
+            if (docSnap.exists) {
+                // Success
+                localStorage.setItem(STORAGE_PREFIX + currentPanel.name, enteredPassword);
+                passwordError.classList.add('hidden');
+                updateCardStatus(currentPanel.name, true);
+                closeModal('password-modal', 'modal-content-access');
+
+                // Show toast notification
+                showToast(`Access Granted for ${currentPanel.name}!`);
+
+                window.open(docSnap.data().link, '_blank');
+            } else {
+                // Error
+                passwordError.classList.remove('hidden');
+                document.getElementById('panel-password').classList.add('border-red-500', 'ring-red-500');
+                setTimeout(() => {
+                    document.getElementById('panel-password').classList.remove('border-red-500', 'ring-red-500');
+                }, 1000);
+            }
+
+            // Restore button state
+            buttonText.textContent = 'Unlock & Go';
+            loadingSpinner.classList.add('hidden');
+            submitButton.disabled = false;
+        }
+
+        // --- Reset Access Logic ---
+
+        function openResetModal() {
+            openModal('reset-modal', 'modal-content-reset');
+        }
+
+        function resetAccessConfirmed() {
+            let count = 0;
+            const keysToRemove = [];
+
+            // Find all panel access keys
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(STORAGE_PREFIX)) {
+                    keysToRemove.push(key);
+                    count++;
+                }
+            }
+
+            // Remove keys
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+
+            // Close modal and show success toast
+            closeModal('reset-modal', 'modal-content-reset');
+            showToast(`${count} Panel Access Tokens Cleared.`, 5000);
+
+            // Re-render the grid to update the status text on cards
+            renderPanelGrid();
+        }
+
+
+        // --- Initialization ---
+
+        window.onload = () => {
+            initTheme();
+            // We call renderPanelGrid twice: once to check initial status,
+            // and again inside the IntersectionObserver setup. We will optimize
+            // and call it just once here.
+            renderPanelGrid();
+        };
+
+        // Allow closing modals by clicking outside
+        document.getElementById('password-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('password-modal')) {
+                closeModal('password-modal', 'modal-content-access');
+            }
+        });
+        document.getElementById('reset-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('reset-modal')) {
+                closeModal('reset-modal', 'modal-content-reset');
+            }
+        });
+
+    </script>
+</body>
+</html>
