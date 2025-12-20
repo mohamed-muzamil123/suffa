@@ -278,58 +278,60 @@
       </div>
       <div class="search-section">
         <h2 class="mb-3 fw-bold text-dark">Students</h2>
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <input
-              type="text"
-              class="form-control"
-              id="nameSearch"
-              placeholder="Search by student name..."
-              onkeyup="filterStudents()"
-            />
-          </div>
-          <div class="col-md-3">
-            <input
-              type="text"
-              class="form-control"
-              id="chestSearch"
-              placeholder="Search by chest number..."
-              onkeyup="filterStudents()"
-            />
-          </div>
-          <div class="col-md-3">
-            <select
-              class="form-select"
-              id="teamFilter"
-              onchange="filterStudents()"
-            >
-              <option value="">All Teams</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <select
-              class="form-select"
-              id="catFilter"
-              onchange="filterStudents()"
-            >
-              <option value="">All Categories</option>
-            </select>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <select
-              class="form-select"
-              id="sortSelect"
-              onchange="filterStudents()"
-            >
-              <option value="chest-asc">Chest Number Ascending</option>
-              <option value="onstage-desc">On-Stage Points Descending</option>
-              <option value="offstage-desc">Off-Stage Points Descending</option>
-              <option value="total-desc">Total Points Descending</option>
-            </select>
-          </div>
-        </div>
+      <div class="row mb-3">
+  <div class="col-md-3">
+    <input
+      type="text"
+      class="form-control"
+      id="nameSearch"
+      placeholder="Search by student name..."
+      onkeyup="filterStudents()"
+    />
+  </div>
+  <div class="col-md-3">
+    <input
+      type="text"
+      class="form-control"
+      id="chestSearch"
+      placeholder="Search by chest number..."
+      onkeyup="filterStudents()"
+    />
+  </div>
+  <div class="col-md-3">
+    <select
+      class="form-select"
+      id="teamFilter"
+      onchange="filterStudents()"
+    >
+      <option value="">All Teams</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select
+      class="form-select"
+      id="catFilter"
+      onchange="filterStudents()"
+    >
+      <option value="">All Categories</option>
+    </select>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    <select
+      class="form-select"
+      id="sortSelect"
+      onchange="filterStudents()"
+    >
+      <option value="chest-asc">Chest Number Ascending</option>
+      <option value="onstage-desc">On-Stage Points Descending</option>
+      <option value="offstage-desc">Off-Stage Points Descending</option>
+      <option value="total-desc">Total Points Descending</option>
+    </select>
+  </div>
+</div>
+
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
@@ -649,53 +651,51 @@
         document.getElementById("teamFilter").value = teamName;
         filterStudents();
       };
-      window.filterStudents = function () {
-        nameSearch = document.getElementById("nameSearch").value.toLowerCase();
-        chestSearch = document
-          .getElementById("chestSearch")
-          .value.toLowerCase();
-        currentTeamFilter = document.getElementById("teamFilter").value;
-        currentCatFilter = document.getElementById("catFilter").value;
-        currentSort = document.getElementById("sortSelect").value;
-        let filtered = students.filter(
-          (s) =>
-            s.name.toLowerCase().includes(nameSearch) &&
-            s.chestNo.toString().toLowerCase().includes(chestSearch) &&
-            (currentTeamFilter === "" || s.team === currentTeamFilter) &&
-            (currentCatFilter === "" || (s.category || "") === currentCatFilter)
-        );
-        filtered.sort((a, b) => {
-          let va, vb;
-          switch (currentSort) {
-            case "chest-asc":
-              va = a.chestNo;
-              vb = b.chestNo;
-              return va - vb;
-            case "onstage-desc": {
-              const ta = calculateStudentTotals(a.id);
-              const tb = calculateStudentTotals(b.id);
-              va = ta.onStage;
-              vb = tb.onStage;
-              break;
-            }
-            case "offstage-desc": {
-              const ta = calculateStudentTotals(a.id);
-              const tb = calculateStudentTotals(b.id);
-              va = ta.offStage;
-              vb = tb.offStage;
-              break;
-            }
-            case "total-desc": {
-              const ta = calculateStudentTotals(a.id);
-              const tb = calculateStudentTotals(b.id);
-              va = ta.total;
-              vb = tb.total;
-              break;
-            }
-          }
-        });
-        renderStudentTable(filtered);
-      };
+     window.filterStudents = function () {
+  const nameSearch = document.getElementById("nameSearch").value.toLowerCase();
+  const chestSearch = document.getElementById("chestSearch").value.toLowerCase();
+  const currentTeamFilter = document.getElementById("teamFilter").value;
+  const currentCatFilter = document.getElementById("catFilter").value;
+  const currentSort = document.getElementById("sortSelect").value;
+
+  let filtered = students.filter(s => {
+    const nameMatch = s.name.toLowerCase().includes(nameSearch);
+    const chestMatch = s.chestNo.toString().toLowerCase().includes(chestSearch);
+    const teamMatch = !currentTeamFilter || s.team === currentTeamFilter;
+    const catMatch = !currentCatFilter || (s.category || "") === currentCatFilter;
+    return nameMatch && chestMatch && teamMatch && catMatch;
+  });
+
+  filtered.sort((a, b) => {
+    let va, vb;
+
+    switch (currentSort) {
+      case "chest-asc":
+        return a.chestNo - b.chestNo;
+
+      case "onstage-desc":
+        va = calculateStudentTotals(a.id).onStage;
+        vb = calculateStudentTotals(b.id).onStage;
+        return vb - va;
+
+      case "offstage-desc":
+        va = calculateStudentTotals(a.id).offStage;
+        vb = calculateStudentTotals(b.id).offStage;
+        return vb - va;
+
+      case "total-desc":
+        va = calculateStudentTotals(a.id).total;
+        vb = calculateStudentTotals(b.id).total;
+        return vb - va;
+
+      default:
+        return 0;
+    }
+  });
+
+  renderStudentTable(filtered);
+};
+
       function renderStudentTable(studs) {
         const tbody = document.getElementById("studentTbody");
         if (studs.length === 0) {
