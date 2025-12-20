@@ -195,14 +195,12 @@
           font-size: 1rem;
         }
       }
-
       .logo-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
       }
-
       .logo-img {
         max-height: 50px;
         max-width: 80px;
@@ -211,13 +209,11 @@
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         transition: transform 0.3s ease;
-        margin-bottom: 0.25rem; /* Space under logo for fest name */
+        margin-bottom: 0.25rem;
       }
-
       .logo-img:hover {
         transform: scale(1.05);
       }
-
       .fest-name {
         color: white;
         font-weight: 600;
@@ -226,28 +222,22 @@
         letter-spacing: 1px;
         margin: 0;
       }
-
-      /* Mobile: Full stack for header */
       @media (max-width: 768px) {
         .logo-container {
           margin-bottom: 0.5rem;
         }
-
         .logo-img {
           max-height: 40px;
           max-width: 60px;
         }
-
         .fest-name {
           font-size: 0.75rem;
         }
-
         .d-flex.align-items-center h1 {
           font-size: 1.25rem;
           text-align: center;
           width: 100%;
         }
-
         .header {
           padding: 1rem;
           text-align: center;
@@ -258,19 +248,16 @@
   <body>
     <header class="header">
       <div class="d-flex justify-content-between align-items-center">
-        <!-- Logo and Fest Name (Stacked) -->
         <div class="d-flex align-items-center">
           <div class="logo-container me-3">
-            <img src="logo.png" alt="    Logo" class="logo-img" />
+            <img src="logo.png" alt="Logo" class="logo-img" />
             <p class="fest-name mb-0"></p>
           </div>
           <h1 class="mb-0 fw-bold">Check Panel</h1>
         </div>
       </div>
     </header>
-
     <main class="container-fluid p-4">
-      <!-- Results Highlight Card -->
       <div class="row mb-4">
         <div class="col-12">
           <div class="results-card">
@@ -280,8 +267,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Teams Section -->
       <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="fw-bold text-dark mb-0">Teams Overview</h2>
@@ -291,8 +276,6 @@
         </div>
         <div id="teamCards" class="row"></div>
       </div>
-
-      <!-- Students Section -->
       <div class="search-section">
         <h2 class="mb-3 fw-bold text-dark">Students</h2>
         <div class="row mb-3">
@@ -364,8 +347,6 @@
         </div>
       </div>
     </main>
-
-    <!-- Points Modal -->
     <div class="modal fade" id="pointsModal" tabindex="-1">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -400,19 +381,18 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
+           <button
+  type="button"
+  class="btn btn-secondary"
+  data-bs-dismiss="modal"
+>
+  Close
+</button>
+
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Details Modal -->
     <div class="modal fade" id="detailsModal" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -421,7 +401,7 @@
             <button
               type="button"
               class="btn-close btn-close-white"
-              data-bs-dismiss="modal"
+              data-bs.dismiss="modal"
             ></button>
           </div>
           <div class="modal-body">
@@ -461,19 +441,18 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
+           <button
+  type="button"
+  class="btn btn-secondary"
+  data-bs-dismiss="modal"
+>
+  Close
+</button>
+
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Toast -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div
         id="liveToast"
@@ -485,77 +464,45 @@
           <button
             type="button"
             class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
+            data-bs.dismiss="toast"
           ></button>
         </div>
       </div>
     </div>
-
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
       import {
         getFirestore,
         collection,
-        doc,
-        getDoc,
-        updateDoc,
         query,
         where,
+        onSnapshot,
         orderBy,
-        getDocs,
       } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-
-      // 👇 Import authentication modules (NEW)
-      import {
-        getAuth,
-        signInAnonymously,
-        onAuthStateChanged,
-      } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyABvJLRod-O16gGanR9A8KNTVw3CetsqAw",
-//   authDomain: "gazzali.firebaseapp.com",
-//   projectId: "gazzali",
-//   storageBucket: "gazzali.firebasestorage.app",
-//   messagingSenderId: "510880643701",
-//   appId: "1:510880643701:web:a670ae47702b4e40c5163c"
-// };
-   const firebaseConfig = {
-  apiKey: "AIzaSyC1gEEprODHX63Rbd3eKAbzef7JSz7e4yc",
-  authDomain: "suffa-b3b9f.firebaseapp.com",
-  projectId: "suffa-b3b9f",
-  storageBucket: "suffa-b3b9f.firebasestorage.app",
-  messagingSenderId: "1062460671442",
-  appId: "1:1062460671442:web:a5a81bf77c4a08061bb40b"
-};
-
-      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyC1gEEprODHX63Rbd3eKAbzef7JSz7e4yc",
+        authDomain: "suffa-b3b9f.firebaseapp.com",
+        projectId: "suffa-b3b9f",
+        storageBucket: "suffa-b3b9f.firebasestorage.app",
+        messagingSenderId: "1062460671442",
+        appId: "1:1062460671442:web:a5a81bf77c4a08061bb40b",
+      };
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-      // const auth = getAuth(app);
-
-      // //  // ✅ Sign in anonymously (no login UI)
-      // signInAnonymously(auth)
-      //   .then(() => {
-      //     console.log("✅ Signed in anonymously!");
-      //   })
-      //   .catch((error) => {
-      //     console.error("Auth error:", error);
-      //   });
-
       let students = [];
       let teams = [];
       let finalizedProgrammes = [];
       let participations = {};
       let uniqueTeams = [];
       let uniqueCategories = [];
+      let unsubscribeStudents = null;
+      let unsubscribeTeams = null;
+      let unsubscribeProgrammes = null;
       let currentSort = "chest-asc";
       let currentTeamFilter = "";
       let currentCatFilter = "";
       let nameSearch = "";
       let chestSearch = "";
-
-      // Utils
       window.showToast = function (message, type = "success") {
         const toastEl = document.getElementById("liveToast");
         const toastBody = document.getElementById("toastBody");
@@ -566,27 +513,32 @@
         const toast = new bootstrap.Toast(toastEl);
         toast.show();
       };
-
       function computeParticipations() {
         participations = {};
         const suffix = ["st", "nd", "rd", "th"];
-        finalizedProgrammes.forEach((p) => {
-          const marksDetails = p.marksDetails || {};
+        finalizedProgrammes.forEach((prog) => {
+          const marksDetails = prog.marksDetails || {};
+          const category = prog.category || "";
+          const type = prog.type || "";
           Object.entries(marksDetails).forEach(([studentId, details]) => {
             if (!participations[studentId]) participations[studentId] = [];
-            const place = details.place
-              ? `${details.place}${suffix[Math.min(3, details.place - 1)]}`
+            const placeStr = details.place
+              ? `${details.place}${suffix[Math.min(details.place - 1, 3)]}`
               : "None";
+            const label = category === "general" ? " (Team Only)" : "";
             participations[studentId].push({
-              name: p.name,
-              type: p.type,
+              programmeId: prog.id,
+              name: prog.name,
+              category: category,
+              type: type,
               points: details.points || 0,
-              place,
+              place: placeStr,
+              label: label,
+              isGeneral: category === "general",
             });
           });
         });
       }
-
       function computeUnique() {
         uniqueTeams = [...new Set(students.map((s) => s.team))].sort();
         uniqueCategories = [...new Set(students.map((s) => s.category || ""))]
@@ -594,7 +546,6 @@
           .sort();
         populateFilters();
       }
-
       function populateFilters() {
         const teamSelect = document.getElementById("teamFilter");
         teamSelect.innerHTML =
@@ -607,13 +558,11 @@
             .map((c) => `<option value="${c}">${c}</option>`)
             .join("");
       }
-
       function computeTeamData() {
         teams.forEach((t) => {
           t.numStudents = students.filter((s) => s.team === t.name).length;
           t.totalPoints = t.marks?.total || 0;
         });
-        // Compute ranks
         const sortedTeamsForRank = [...teams].sort(
           (a, b) => b.totalPoints - a.totalPoints
         );
@@ -635,7 +584,6 @@
         }
         renderTeamCards();
       }
-
       function renderTeamCards() {
         const container = document.getElementById("teamCards");
         if (teams.length === 0) {
@@ -662,31 +610,31 @@
           )
           .join("");
       }
-
       function loadStudents() {
+        if (unsubscribeStudents) unsubscribeStudents();
         const q = query(collection(db, "students"), orderBy("chestNo"));
-        getDocs(q).then((snapshot) => {
+        unsubscribeStudents = onSnapshot(q, (snapshot) => {
           students = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
           computeUnique();
           computeTeamData();
           filterStudents();
         });
       }
-
       function loadTeams() {
+        if (unsubscribeTeams) unsubscribeTeams();
         const q = query(collection(db, "teams"), orderBy("name"));
-        getDocs(q).then((snapshot) => {
+        unsubscribeTeams = onSnapshot(q, (snapshot) => {
           teams = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
           computeTeamData();
         });
       }
-
       function loadFinalizedProgrammes() {
+        if (unsubscribeProgrammes) unsubscribeProgrammes();
         const q = query(
           collection(db, "programmes"),
           where("finalized", "==", true)
         );
-        getDocs(q).then((snapshot) => {
+        unsubscribeProgrammes = onSnapshot(q, (snapshot) => {
           finalizedProgrammes = snapshot.docs.map((d) => ({
             id: d.id,
             ...d.data(),
@@ -694,14 +642,13 @@
           document.getElementById("resultsCount").textContent =
             finalizedProgrammes.length;
           computeParticipations();
+          filterStudents(); // Ensure table uses latest participations if needed
         });
       }
-
       window.filterByTeam = function (teamName) {
         document.getElementById("teamFilter").value = teamName;
         filterStudents();
       };
-
       window.filterStudents = function () {
         nameSearch = document.getElementById("nameSearch").value.toLowerCase();
         chestSearch = document
@@ -710,7 +657,6 @@
         currentTeamFilter = document.getElementById("teamFilter").value;
         currentCatFilter = document.getElementById("catFilter").value;
         currentSort = document.getElementById("sortSelect").value;
-
         let filtered = students.filter(
           (s) =>
             s.name.toLowerCase().includes(nameSearch) &&
@@ -718,7 +664,6 @@
             (currentTeamFilter === "" || s.team === currentTeamFilter) &&
             (currentCatFilter === "" || (s.category || "") === currentCatFilter)
         );
-
         filtered.sort((a, b) => {
           let va, vb;
           switch (currentSort) {
@@ -726,26 +671,31 @@
               va = a.chestNo;
               vb = b.chestNo;
               return va - vb;
-            case "onstage-desc":
-              va = a.marks?.onStage || 0;
-              vb = b.marks?.onStage || 0;
-              return vb - va;
-            case "offstage-desc":
-              va = a.marks?.offStage || 0;
-              vb = b.marks?.offStage || 0;
-              return vb - va;
-            case "total-desc":
-              va = a.marks?.total || 0;
-              vb = b.marks?.total || 0;
-              return vb - va;
-            default:
-              return 0;
+            case "onstage-desc": {
+              const ta = calculateStudentTotals(a.id);
+              const tb = calculateStudentTotals(b.id);
+              va = ta.onStage;
+              vb = tb.onStage;
+              break;
+            }
+            case "offstage-desc": {
+              const ta = calculateStudentTotals(a.id);
+              const tb = calculateStudentTotals(b.id);
+              va = ta.offStage;
+              vb = tb.offStage;
+              break;
+            }
+            case "total-desc": {
+              const ta = calculateStudentTotals(a.id);
+              const tb = calculateStudentTotals(b.id);
+              va = ta.total;
+              vb = tb.total;
+              break;
+            }
           }
         });
-
         renderStudentTable(filtered);
       };
-
       function renderStudentTable(studs) {
         const tbody = document.getElementById("studentTbody");
         if (studs.length === 0) {
@@ -772,54 +722,61 @@
           )
           .join("");
       }
-
       window.openPointsModal = function (sid) {
         const s = students.find((ss) => ss.id === sid);
+        const totals = calculateStudentTotals(s.id);
         if (!s) return;
         document.getElementById("pointsTitle").textContent = `${s.name} Points`;
-        document.getElementById("onStagePoints").textContent =
-          s.marks?.onStage || 0;
-        document.getElementById("offStagePoints").textContent =
-          s.marks?.offStage || 0;
-        document.getElementById("totalPoints").textContent =
-          s.marks?.total || 0;
+        document.getElementById("onStagePoints").textContent = totals.onStage;
+        document.getElementById("offStagePoints").textContent = totals.offStage;
+        document.getElementById("totalPoints").textContent = totals.total;
         new bootstrap.Modal(document.getElementById("pointsModal")).show();
       };
 
       window.openDetailsModal = function (sid) {
         const s = students.find((ss) => ss.id === sid);
+
         if (!s) return;
+        const parts = participations[sid] || [];
+        let onStageCalc = 0;
+        let offStageCalc = 0;
+        parts.forEach((p) => {
+          const type = (p.type || "").toLowerCase().replace(/\s|-/g, "");
+          if (!p.isGeneral) {
+            if (type === "onstage") {
+              onStageCalc += p.points;
+            } else if (type === "offstage") {
+              offStageCalc += p.points;
+            }
+          }
+        });
+        const totalCalc = onStageCalc + offStageCalc;
         document.getElementById(
           "detailsTitle"
         ).textContent = `${s.name} Details`;
-        document.getElementById("detailsOnStage").textContent =
-          s.marks?.onStage || 0;
-        document.getElementById("detailsOffStage").textContent =
-          s.marks?.offStage || 0;
-        document.getElementById("detailsTotal").textContent =
-          s.marks?.total || 0;
-
-        const parts = participations[sid] || [];
+        document.getElementById("detailsOnStage").textContent = onStageCalc;
+        document.getElementById("detailsOffStage").textContent = offStageCalc;
+        document.getElementById("detailsTotal").textContent = totalCalc;
         const tbody = document.getElementById("partTbody");
-        tbody.innerHTML =
-          parts.length === 0
-            ? '<tr><td colspan="4" class="text-center">No participations found.</td></tr>'
-            : parts
-                .map(
-                  (p) => `
+        if (parts.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="4" class="text-center">No participations found.</td></tr>';
+        } else {
+          tbody.innerHTML = parts
+            .map(
+              (p) => `
                 <tr>
-                    <td>${p.name}</td>
-                    <td>${p.type}</td>
+                    <td>${p.name}${p.label}</td>
+                    <td>${p.category || ""}</td>
                     <td>${p.points}</td>
                     <td>${p.place}</td>
                 </tr>
-            `
-                )
-                .join("");
-
+              `
+            )
+            .join("");
+        }
         new bootstrap.Modal(document.getElementById("detailsModal")).show();
       };
-
       window.exportTeams = function () {
         const resultNumber =
           document.getElementById("resultsCount").textContent;
@@ -827,7 +784,6 @@
           showToast("Please wait for data to load", "danger");
           return;
         }
-
         const sortedForDisplay = [...teams].sort(
           (a, b) =>
             b.totalPoints - a.totalPoints || a.name.localeCompare(b.name)
@@ -843,87 +799,12 @@
             `
           )
           .join("");
-
         const printWindow = window.open("", "_blank", "width=800,height=600");
         printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Export Teams - AFTER RESULT</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-                    <style>
-                        @page {
-                            size: A4;
-                            margin: 1in;
-                        }
-                        body {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 12pt;
-                            line-height: 1.4;
-                            color: #333;
-                            max-width: 210mm;
-                            margin: 0 auto;
-                        }
-                        h1 {
-                            text-align: center;
-                            font-size: 24pt;
-                            font-weight: bold;
-                            margin-bottom: 0.5rem;
-                            page-break-after: avoid;
-                        }
-                        h2 {
-                            text-align: center;
-                            font-size: 16pt;
-                            font-weight: 600;
-                            margin-bottom: 2rem;
-                            page-break-after: avoid;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-bottom: 1rem;
-                        }
-                        th, td {
-                            border: 1px solid #ddd;
-                            padding: 8px;
-                            text-align: left;
-                        }
-                        th {
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            color: white;
-                            font-weight: 600;
-                        }
-                        @media print {
-                            body { -webkit-print-color-adjust: exact; }
-                            th { -webkit-print-color-adjust: exact; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>AFTER RESULT</h1>
-                    <h2>Result Number: ${resultNumber}</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Place</th>
-                                <th>Team Name</th>
-                                <th>Points</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                        };
-           
+               
             `);
         printWindow.document.close();
       };
-
-      // Initialize
       document.addEventListener("DOMContentLoaded", () => {
         loadStudents();
         loadTeams();
@@ -933,6 +814,27 @@
         document.getElementById("teamCards").innerHTML =
           '<div class="col-12"><div class="alert alert-info text-center">Loading teams...</div></div>';
       });
+
+      function calculateStudentTotals(studentId) {
+        const parts = participations[studentId] || [];
+        let onStage = 0;
+        let offStage = 0;
+
+        parts.forEach((p) => {
+          if ((p.category || "").toLowerCase() !== "general") {
+            const type = (p.type || "").toLowerCase().replace(/\s|-/g, "");
+
+            if (type === "onstage") onStage += p.points || 0;
+            else if (type === "offstage") offStage += p.points || 0;
+          }
+        });
+
+        return {
+          onStage,
+          offStage,
+          total: onStage + offStage,
+        };
+      }
     </script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
